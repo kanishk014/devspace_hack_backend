@@ -13,11 +13,7 @@ const meetingRouter = require("./routes/meetingRoutes");
 const propertyRouter = require("./routes/propertyRoutes");
 const { errorHandler, notFound } = require("./middleware/errorMiddleware");
 
-app.use(
-	cors({
-		origin: "*",
-	})
-);
+
 
 // app.use(express.static(path.join(__dirname, 'public')));
 
