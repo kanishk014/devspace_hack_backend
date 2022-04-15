@@ -6,7 +6,7 @@ const Email = require("../utils/email");
 const crypto = require("crypto");
 
 const { generateToken } = require("../utils/generateToken");
-const expressAsyncHandler = require("express-async-handler");
+// const expressAsyncHandler = require("express-async-handler");
 
 exports.loginUser = asyncHandler(async (req, res) => {
 	const { email, userpass } = req.body;
