@@ -13,7 +13,11 @@ const meetingRouter = require("./routes/meetingRoutes");
 const propertyRouter = require("./routes/propertyRoutes");
 const { errorHandler, notFound } = require("./middleware/errorMiddleware");
 
-
+app.use(
+	cors({
+		origin: "*",
+	})
+);
 
 // app.use(express.static(path.join(__dirname, 'public')));
 
@@ -40,10 +44,9 @@ app.use("/api/meet", meetingRouter);
 app.use("/api/users", userRouter);
 app.use("/api/property", propertyRouter);
 
-app.get("/",(req,res)=>{
-    res.json("Home")
-})
-
+app.get("/", (req, res) => {
+	res.json("Home");
+});
 
 app.use(notFound);
 //Error middleware

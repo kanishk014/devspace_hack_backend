@@ -6,7 +6,7 @@ const Email = require("../utils/email");
 const crypto = require("crypto");
 
 const { generateToken } = require("../utils/generateToken");
-// const expressAsyncHandler = require("express-async-handler");
+const expressAsyncHandler = require("express-async-handler");
 
 exports.loginUser = asyncHandler(async (req, res) => {
 	const { email, userpass } = req.body;
@@ -194,4 +194,19 @@ exports.fetchData = asyncHandler(async (req, res) => {
 
 		throw new Error(e.message);
 	}
+});
+
+exports.updateUser = asyncHandler(async (req, res) => {
+    console.log("CALEd");
+	const doc = await User.findByIdAndUpdate(req.params.id, req.body, {
+        // overwrite:true,
+		new: true,
+	});
+
+	if (!doc) {
+		res.status(404);
+		throw new Error("No document found with that ID.");
+	}
+
+	res.status(200).json(doc);
 });
