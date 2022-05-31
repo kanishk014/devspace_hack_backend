@@ -5,7 +5,7 @@ const pug = require("pug");
 
 module.exports = class Email {
   constructor(user, url) {
-    this.to = user.email;
+    this.to = user?.email;
     this.firstName = user.name?.split(" ")[0];
     this.url = url;
     this.from = `VRDOOR <${process.env.EMAIL_FROM}>`;
