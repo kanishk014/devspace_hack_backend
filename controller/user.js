@@ -6,7 +6,6 @@ const Email = require("../utils/email");
 const crypto = require("crypto");
 
 const { generateToken } = require("../utils/generateToken");
-const expressAsyncHandler = require("express-async-handler");
 
 exports.loginUser = asyncHandler(async (req, res) => {
 	const { email, userpass } = req.body;
@@ -46,9 +45,8 @@ exports.loginUser = asyncHandler(async (req, res) => {
 
 exports.registerUser = asyncHandler(async (req, res) => {
 	// const { email, userpass, name, userImage, phoneno } = req.body;
-
 	const userExist = await User.findOne({ email: req.body.email });
-	console.log(userExist);
+	// console.log(req.body);
 	if (userExist) {
 		res.status(401);
 		throw new Error("User already exist");
@@ -59,7 +57,7 @@ exports.registerUser = asyncHandler(async (req, res) => {
 			.update(token)
 			.digest("hex");
 
-		const newUser = await User.create({
+		const newUser = await  User.create({
 			name: req.body.name,
 			email: req.body.email,
 			userpass: req.body.userpass,
@@ -68,7 +66,14 @@ exports.registerUser = asyncHandler(async (req, res) => {
 			gender: req.body.gender,
 			userImage: req.body.userImage,
 			activationToken,
-		});
+		})
+			// .then(() => {
+			// 	console.log("saved");
+			// })
+			// .catch((e) => {
+			// 	console.log("Failed", e.message);
+			// });
+        console.log("NEW",newUser);
 		if (newUser) {
 			// const url = `${req.protocol}://${req.get(
 			// 	"host"

@@ -179,53 +179,53 @@ exports.addProperty = asyncHandler(async (req, res) => {
 			},
 		];
 
-        // const properties=Data.map((property)=>{return{...property}})
-        // const checkProp=await Property.insertMany(properties);
-        // if(checkProp){
-        //     res.json("added")
-        // }
-	// console.log(req.body, "user");
+        const properties=Data.map((property)=>{return{...property}})
+        const checkProp=await Property.insertMany(properties);
+        if(checkProp){
+            res.json("added")
+        }
+	console.log(req.body, "user");
 
-	try {
-		const newProperty = await  Property.create({
-            userId:mongoose.Types.ObjectId(userId),
-			title: title,
-			propertyImage: propertyImage,
-			overview: overview,
-			price: price,
-			category: category,
-			beds: beds,
-			baths: baths,
-			sqft: sqft,
-			type: type,
-			status: status,
-			builtYear: builtYear,
-			parkingSpaces: parkingSpaces,
-			roomCount: roomCount,
-			location: location,
-			tvCable: tvCable,
-			barbeque: barbeque,
-			ac: ac,
-			lawn: lawn,
-			laundry: laundry,
-			ccCam: ccCam,
-			feel_360: feel_360,
-		});
-        console.log(newProperty);
-		// newProperty.save(() => {
-		// 	console.log("saved");
-		// });
-		if (newProperty) {
-			res.status(200).json(newProperty);
-		} else {
-			res.status(400);
-			throw new Error("Property not found");
-		}
-	} catch (e) {
-		res.status(400);
+	// try {
+	// 	const newProperty = await  Property.create({
+    //         userId:mongoose.Types.ObjectId(userId),
+	// 		title: title,
+	// 		propertyImage: propertyImage,
+	// 		overview: overview,
+	// 		price: price,
+	// 		category: category,
+	// 		beds: beds,
+	// 		baths: baths,
+	// 		sqft: sqft,
+	// 		type: type,
+	// 		status: status,
+	// 		builtYear: builtYear,
+	// 		parkingSpaces: parkingSpaces,
+	// 		roomCount: roomCount,
+	// 		location: location,
+	// 		tvCable: tvCable,
+	// 		barbeque: barbeque,
+	// 		ac: ac,
+	// 		lawn: lawn,
+	// 		laundry: laundry,
+	// 		ccCam: ccCam,
+	// 		feel_360: feel_360,
+	// 	});
+    //     console.log(newProperty);
+	// 	// newProperty.save(() => {
+	// 	// 	console.log("saved");
+	// 	// });
+	// 	if (newProperty) {
+	// 		res.status(200).json(newProperty);
+	// 	} else {
+	// 		res.status(400);
+	// 		throw new Error("Property not found");
+	// 	}
+	// } catch (e) {
+	// 	res.status(400);
 
-		throw new Error(e.message);
-	}
+	// 	throw new Error(e.message);
+	// }
 	// if (propertyExist) {
 	// 	res.status(401);
 	// 	throw new Error("Property already exist");
