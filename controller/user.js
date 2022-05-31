@@ -4,7 +4,13 @@ const bcrypt = require("bcryptjs");
 const { User } = require("../model/userModel");
 const Email = require("../utils/email");
 const crypto = require("crypto");
-
+const { google } = require("googleapis");
+const oAuth2Client = new google.auth.OAuth2(
+	process.env.CLIENT_ID,
+	process.env.CLIENT_SECRET,
+	process.env.REDIRECT_URI
+);
+oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
 const { generateToken } = require("../utils/generateToken");
 
 exports.loginUser = asyncHandler(async (req, res) => {
@@ -47,6 +53,7 @@ exports.registerUser = asyncHandler(async (req, res) => {
 	// const { email, userpass, name, userImage, phoneno } = req.body;
 	const userExist = await User.findOne({ email: req.body.email });
 	// console.log(req.body);
+    const accessToken = await oAuth2Client.getAccessToken();
 	if (userExist) {
 		res.status(401);
 		throw new Error("User already exist");
@@ -57,7 +64,7 @@ exports.registerUser = asyncHandler(async (req, res) => {
 			.update(token)
 			.digest("hex");
 
-		const newUser = await  User.create({
+		const newUser = await User.create({
 			name: req.body.name,
 			email: req.body.email,
 			userpass: req.body.userpass,
@@ -66,23 +73,26 @@ exports.registerUser = asyncHandler(async (req, res) => {
 			gender: req.body.gender,
 			userImage: req.body.userImage,
 			activationToken,
-		})
-			// .then(() => {
-			// 	console.log("saved");
-			// })
-			// .catch((e) => {
-			// 	console.log("Failed", e.message);
-			// });
-        console.log("NEW",newUser);
+		});
+		// .then(() => {
+		// 	console.log("saved");
+		// })
+		// .catch((e) => {
+		// 	console.log("Failed", e.message);
+		// });
+		console.log("NEW", newUser);
 		if (newUser) {
-			// const url = `${req.protocol}://${req.get(
-			// 	"host"
-			// )}/api/users/verified/${activationToken}`;
-			const url = `https://vrdoor.netlify.app/activateuser?activate=${activationToken}`;
+		
+			try {
+				const url = `https://vrdoor.netlify.app/activateuser?activate=${activationToken}`;
 
-			await new Email(newUser, url).sendActivationEmail();
+				await new Email(newUser, url,accessToken).sendActivationEmail();
 
-			res.status(200).json(newUser);
+				res.status(200).json(newUser);
+			} catch (e) {
+				res.status(400);
+				throw new Error(    `Error Occured while sending activation token ${e}`);
+			}
 		} else {
 			res.status(400);
 			throw new Error("User not found");
@@ -137,7 +147,7 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 		// 	"host"
 		// )}/api/users/resetPassword/${resetToken}`;
 
-        const resetURL = `https://vrdoor.netlify.app/resetPassword?resetToken=${resetToken}`;
+		const resetURL = `https://vrdoor.netlify.app/resetPassword?resetToken=${resetToken}`;
 
 		await new Email(user, resetURL).sendPasswordReset();
 
@@ -148,9 +158,9 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 	} catch (err) {
 		user.passwordResetToken = undefined;
 		await user.save({ validateBeforeSave: false });
-
+		// "There was an error sending the email. Try again later!",
 		res.status(500);
-		throw new Error("There was an error sending the email. Try again later!");
+		throw new Error(err.message);
 	}
 });
 
@@ -202,9 +212,9 @@ exports.fetchData = asyncHandler(async (req, res) => {
 });
 
 exports.updateUser = asyncHandler(async (req, res) => {
-    console.log("CALEd");
+	console.log("CALEd");
 	const doc = await User.findByIdAndUpdate(req.params.id, req.body, {
-        // overwrite:true,
+		// overwrite:true,
 		new: true,
 	});
 

@@ -1,26 +1,42 @@
+require("dotenv").config()
 const nodemailer = require("nodemailer");
 const htmlToText = require("html-to-text");
 const pug = require("pug");
-
-
+const { google } = require("googleapis")
+const oAuth2Client = new google.auth.OAuth2(
+	process.env.CLIENT_ID,
+	process.env.CLIENT_SECRET,
+	process.env.REDIRECT_URI
+);
+oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
+// const accessToken = await oAuth2Client.getAccessToken();
 module.exports = class Email {
-  constructor(user, url) {
+  constructor(user, url,accessToken) {
     this.to = user?.email;
     this.firstName = user.name?.split(" ")[0];
     this.url = url;
     this.from = `VRDOOR <${process.env.EMAIL_FROM}>`;
+    this.accessToken=accessToken
   }
 
-  newTransport() {
-   
+   newTransport() {
+       
+console.log(this.accessToken);
 
     return nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
+			// host: "smtp.mail.yahoo.com",
+			service: "gmail",
+
+			auth: {
+				type: "OAuth2",
+				user: process.env.EMAIL_FROM,
+				// pass: process.env.EMAIL_PASSWORD,
+				clientId: process.env.CLIENT_ID,
+				clientSecret: process.env.CLIENT_SECRET,
+				refreshToken: process.env.REFRESH_TOKEN,
+				accessToken: this.accessToken,
+			},
+		});
   }
 
   // Send the actual email.
