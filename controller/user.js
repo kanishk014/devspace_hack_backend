@@ -84,7 +84,7 @@ exports.registerUser = asyncHandler(async (req, res) => {
 		if (newUser) {
 		
 			try {
-				const url = `https://vrdoor.netlify.app/activateuser?activate=${activationToken}`;
+				const url = `https://virtual-estate-vrdoor.netlify.app/activateuser?activate=${activationToken}`;
 
 				await new Email(newUser, url,accessToken).sendActivationEmail();
 
@@ -115,7 +115,7 @@ exports.verification = asyncHandler(async (req, res, next) => {
 		user.activationToken = undefined;
 		await user.save({ validateBeforeSave: false });
 
-		const url = `https://vrdoor.netlify.app/Login`;
+		const url = `https://virtual-estate-vrdoor.netlify.app/Login`;
 
 		await new Email(user, url).sendWelcome();
 		res.status(200).json(user);
@@ -147,7 +147,7 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 		// 	"host"
 		// )}/api/users/resetPassword/${resetToken}`;
 
-		const resetURL = `https://vrdoor.netlify.app/resetPassword?resetToken=${resetToken}`;
+		const resetURL = `https://virtual-estate-vrdoor.netlify.app/resetPassword?resetToken=${resetToken}`;
 
 		await new Email(user, resetURL).sendPasswordReset();
 
